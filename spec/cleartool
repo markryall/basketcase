@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+File.open('ct.log', 'a') do |io|
+  io.puts "Received #{ARGV.inspect}"
+
+  if ARGV == %w{ls -recurse .}
+    puts <<EOF
+
+EOF
+  end
+end
