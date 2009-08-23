@@ -1,11 +1,13 @@
 #!/usr/bin/env ruby
 
-File.open('ct.log', 'a') do |io|
-  io.puts "Received #{ARGV.inspect}"
+args = ARGV.join(' ')
 
-  
-    
-  
+File.open('ct.log', 'a') do |io|
+  io.puts args
 end
 
-puts File.read(File.dirname(__FILE__)+'/ct.output')
+DELIMITER='++++'
+
+stuff = File.read(File.dirname(__FILE__)+"/ct.output").split(DELIMITER)
+puts stuff.shift
+File.open(File.dirname(__FILE__)+'/ct.output', 'w') { |out| out.puts stuff.join(DELIMITER) }
