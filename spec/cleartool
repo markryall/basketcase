@@ -6,7 +6,7 @@ File.open('ct.log', 'a') do |io|
   io.puts args
 end
 
-DELIMITER='++++'
+DELIMITER="\n++++\n"
 
 stuff = File.read(File.dirname(__FILE__)+"/ct.output").split(DELIMITER)
 puts stuff.shift
