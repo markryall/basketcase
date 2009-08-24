@@ -1,3 +1,5 @@
 *~
 pkg
 doc
+ct.log
+spec/ct.output

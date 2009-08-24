@@ -220,7 +220,9 @@ EOF
           raise UsageException, "Unrecognised option: #{option}"
         end
         option_method = method(option_method_name)
-        option_method.call(*args.shift(option_method.arity))
+        parameters = []
+        option_method.arity.times { parameters << args.shift }
+        option_method.call(*parameters)
       end
       @targets = args
       self

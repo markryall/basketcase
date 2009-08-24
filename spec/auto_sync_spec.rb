@@ -6,7 +6,9 @@ describe 'Autosync' do
     
     ENV['PATH'] = "#{File.expand_path(File.dirname(__FILE__))}:#{ENV['PATH']}"
     
-    File.delete(File.dirname(__FILE__)+'/../ct.log')
+    logfile = File.dirname(__FILE__)+'/ct.log'
+    
+    File.delete(logfile) if File.exists?(logfile) 
         
     File.open(File.dirname(__FILE__)+'/ct.output', 'w') do |io|
       10.times do |i|
