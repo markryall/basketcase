@@ -937,7 +937,7 @@ EOF
       ['add', 'rm', 'co -h'].each do |command|
         elements = @actions.map { |a| a[1] if a[0] == command }.compact
         unless elements.empty?
-          run(*(command.split(' ') + elements))
+          elements.each_slice(2) {|subelements| run(*(command.split(' ') + subelements)) }
         end
       end
     end
