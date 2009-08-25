@@ -2,22 +2,27 @@
 
 DELIMITER = "\n++++\n"
 CLEARTOOL_ARGS_LOG = File.dirname(__FILE__)+'/ct.log'
-CLEARTOOL_FAKE_OUTPUT_FILE = File.dirname(__FILE__)+"/ct.output"
 
-def add_fake_output(output_str)
+class OutputQueue
+  CLEARTOOL_FAKE_OUTPUT_FILE = File.dirname(__FILE__)+"/ct.output"
+
+  def self.enqueue *messages
+    write_messages messages
+  end
+  
+  def self.dequeue
+    messages = File.read(CLEARTOOL_FAKE_OUTPUT_FILE).split(DELIMITER)
+    current = messages.shift
+    write_messages messages
+    current
+  end
+private 
+  def self.write_messages messages
+    File.open(CLEARTOOL_FAKE_OUTPUT_FILE, 'w') { |out| out.puts messages.join(DELIMITER) }
+  end
 end
 
 if $0 == __FILE__ 
-
-args = ARGV.join(' ')
-
-File.open(CLEARTOOL_ARGS_LOG, 'a') do |io|
-  io.puts args
-end
-
-
-stuff = File.read(CLEARTOOL_FAKE_OUTPUT_FILE).split(DELIMITER)
-puts stuff.shift
-File.open(CLEARTOOL_FAKE_OUTPUT_FILE, 'w') { |out| out.puts stuff.join(DELIMITER) }
-
+  File.open(CLEARTOOL_ARGS_LOG, 'a') { |io| io.puts ARGV.join(' ') }
+  puts OutputQueue.dequeue
 end
