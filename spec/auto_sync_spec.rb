@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper'
+load 'cleartool'
 
 describe 'Autosync' do
   
@@ -6,11 +7,11 @@ describe 'Autosync' do
     
     ENV['PATH'] = "#{File.expand_path(File.dirname(__FILE__))}:#{ENV['PATH']}"
     
-    logfile = File.dirname(__FILE__)+'/ct.log'
     
-    File.delete(logfile) if File.exists?(logfile) 
+    
+    File.delete(CLEARTOOL_ARGS_LOG) if File.exists?(CLEARTOOL_ARGS_LOG) 
         
-    File.open(File.dirname(__FILE__)+'/ct.output', 'w') do |io|
+    File.open(CLEARTOOL_FAKE_OUTPUT_FILE, 'w') do |io|
       io.puts %q{
 deleteddir1@@\main\2 [loaded but missing]                Rule: \main\LATEST
 deletedfile1.txt@@\main\1 [loaded but missing]           Rule: \main\LATEST
@@ -26,11 +27,11 @@ updateddir1\deletedfile1.txt@@\main\1 [loaded but missing]             Rule: \ma
 updateddir1\newfile1.txt
 updateddir1\updatedfiled1.txt@@\main\1 [hijacked]      Rule: \main\LATEST
 }
-      io.puts '++++'
+      io.puts DELIMITER
       io.puts %q{
 .@@\main\12                                              Rule: \main\LATEST
 }
-      io.puts '++++'
+      io.puts DELIMITER
       io.puts %q{
 cleartool: Error: Can't modify directory "." because it is not checked out.
 cleartool: Error: Can't modify directory "." because it is not checked out.

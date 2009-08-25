@@ -1,13 +1,23 @@
 #!/usr/bin/env ruby
 
+DELIMITER = "\n++++\n"
+CLEARTOOL_ARGS_LOG = File.dirname(__FILE__)+'/ct.log'
+CLEARTOOL_FAKE_OUTPUT_FILE = File.dirname(__FILE__)+"/ct.output"
+
+def add_fake_output(output_str)
+end
+
+if $0 == __FILE__ 
+
 args = ARGV.join(' ')
 
-File.open('ct.log', 'a') do |io|
+File.open(CLEARTOOL_ARGS_LOG, 'a') do |io|
   io.puts args
 end
 
-DELIMITER="\n++++\n"
 
-stuff = File.read(File.dirname(__FILE__)+"/ct.output").split(DELIMITER)
+stuff = File.read(CLEARTOOL_FAKE_OUTPUT_FILE).split(DELIMITER)
 puts stuff.shift
-File.open(File.dirname(__FILE__)+'/ct.output', 'w') { |out| out.puts stuff.join(DELIMITER) }
+File.open(CLEARTOOL_FAKE_OUTPUT_FILE, 'w') { |out| out.puts stuff.join(DELIMITER) }
+
+end
