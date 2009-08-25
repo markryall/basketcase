@@ -932,12 +932,14 @@ EOF
         end
       end
     end
+    
+    NUM_ELEMENTS_PER_COMMAND=10
 
     def apply_actions
       ['add', 'rm', 'co -h'].each do |command|
         elements = @actions.map { |a| a[1] if a[0] == command }.compact
         unless elements.empty?
-          elements.each_slice(2) {|subelements| run(*(command.split(' ') + subelements)) }
+          elements.each_slice(NUM_ELEMENTS_PER_COMMAND) {|subelements| run(*(command.split(' ') + subelements)) }
         end
       end
     end
