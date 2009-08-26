@@ -138,7 +138,7 @@ EOF
     end
 
     def to_s
-      @target_paths.map { |f| "'#{f}'" }.join(" ")
+      @target_paths.map { |f| "\"#{f}\"" }.join(" ")
     end
 
     def empty?
