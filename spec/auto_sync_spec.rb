@@ -41,17 +41,11 @@ cleartool: Error: Can't modify directory "." because it is not checked out.
     
     File.read(CLEARTOOL_ARGS_LOG).should == <<HERE
 ls -recurse .
-ls -directory .
+ls -directory . newdir1 updateddir1
 checkout -unreserved -ncomment -nquery .
-mkelem -ncomment newdir1 newfile1.txt
-ls -directory . newdir1
-mkelem -ncomment newfile2.txt newdir1/newfile1.txt
-ls -directory . updateddir1
-mkelem -ncomment updateddir updateddir1/newfile1.txt
-ls -directory .
-rmname -ncomment deleteddir1 deletedfile1.txt
-ls -directory deleteddir1 1
-rmname -ncomment deleteddir1/deletedfile1.txt 1/deletedfile1.txt
+mkelem -ncomment newdir1 newfile1.txt newfile2.txt newdir1/newfile1.txt updateddir updateddir1/newfile1.txt
+ls -directory . deleteddir1 1
+rmname -ncomment deleteddir1 deletedfile1.txt deleteddir1/deletedfile1.txt 1/deletedfile1.txt
 checkout -unreserved -ncomment -usehijack updatedfiled1.txt updateddir1/updatedfiled1.txt
 HERE
     
