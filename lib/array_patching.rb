@@ -1,5 +1,4 @@
 unless [].respond_to?(:each_slice)
-  puts "PATCHING"
   class Array
     def each_slice count
       items = []
