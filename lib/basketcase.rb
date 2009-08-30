@@ -1,5 +1,6 @@
 require 'pathname'
 require 'forwardable'
+require 'array_patching'
 
 class Basketcase
 
