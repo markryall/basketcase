@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 load 'cleartool'
 
 describe 'Autosync' do
-
   it 'should be able to handle lots of files that need to be added' do
     File.delete(CLEARTOOL_ARGS_LOG) if File.exists?(CLEARTOOL_ARGS_LOG)
 
