@@ -699,7 +699,6 @@ EOF
         end
       end
     end
-
   end
 
   class MoveCommand < DirectoryModificationCommand

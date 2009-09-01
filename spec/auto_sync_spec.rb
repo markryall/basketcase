@@ -2,13 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper'
 load 'cleartool'
 
 describe 'Autosync' do
-  
-  it 'should be able to handle lots of files that need to be added' do 
-    
-    ENV['PATH'] = "#{File.expand_path(File.dirname(__FILE__))}:#{ENV['PATH']}"
-    
-    File.delete(CLEARTOOL_ARGS_LOG) if File.exists?(CLEARTOOL_ARGS_LOG) 
-    
+
+  it 'should be able to handle lots of files that need to be added' do
+    File.delete(CLEARTOOL_ARGS_LOG) if File.exists?(CLEARTOOL_ARGS_LOG)
+
     OutputQueue.enqueue(%q{
 deleteddir1@@\main\2 [loaded but missing]                Rule: \main\LATEST
 deletedfile1.txt@@\main\1 [loaded but missing]           Rule: \main\LATEST
@@ -35,10 +32,10 @@ cleartool: Error: Can't modify directory "." because it is not checked out.
 cleartool: Error: Can't modify directory "." because it is not checked out.
 cleartool: Error: Can't modify directory "." because it is not checked out.
 })
-    
+
     $stderr.stub!(:puts)
     Basketcase.new.do('auto-sync','-n')
-    
+
     File.read(CLEARTOOL_ARGS_LOG).should == <<HERE
 ls -recurse .
 ls -directory . newdir1 updateddir1
@@ -48,8 +45,5 @@ ls -directory . deleteddir1 1
 rmname -ncomment deleteddir1 deletedfile1.txt deleteddir1/deletedfile1.txt 1/deletedfile1.txt
 checkout -unreserved -ncomment -usehijack updatedfiled1.txt updateddir1/updatedfiled1.txt
 HERE
-    
   end
-  
-
 end
