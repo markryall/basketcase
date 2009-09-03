@@ -1,12 +1,9 @@
-ROOT = File.expand_path(File.dirname(__FILE__)+'/..')
+
 
 require File.dirname(__FILE__)+'/spec_helper'
 load 'cleartool'
 
 describe  'modify files' do 
-  # TODO put these somewhere better
-  WORKING_VIEW = "#{ROOT}/tmp/views/working-view"
-  CONTROL_VIEW = "#{ROOT}/tmp/views/control-view"    
   
   before(:all) do
     FileUtils.mkdir_p(WORKING_VIEW)
@@ -32,6 +29,8 @@ describe  'modify files' do
       File.exists?(newfile).should == true
     end  
   end
+  
+  
   
   def create_file(filename, content)
     

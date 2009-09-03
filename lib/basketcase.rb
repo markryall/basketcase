@@ -2,12 +2,21 @@ require 'pathname'
 require 'forwardable'
 require 'array_patching'
 require 'basketcase/utils'
-require 'basketcase/element_status'
 require 'find'
 
 #load commands
 Find.find(File.dirname(__FILE__)+'/basketcase') do |path|
   load path if path =~ /_command\.rb$/
+end
+
+module Utils
+  def mkpath(path)
+    path = path.to_str
+    path = path.tr('\\', '/')
+    path = path.sub(%r{^\./},'')
+    path = path.sub(%r{^([A-Za-z]):\/}, '/cygdrive/\1/')
+    Pathname.new(path)
+  end
 end
 
 class Basketcase
@@ -135,6 +144,23 @@ EOF
   class UsageException < Exception
   end
 
+  # Represents the status of an element
+  class ElementStatus
+    def initialize(path, status, base_version = nil)
+      @path = path
+      @status = status
+      @base_version = base_version
+    end
+
+    attr_reader :path, :status, :base_version
+
+    def to_s
+      s = "#{path} (#{status})"
+      s += " [#{base_version}]" if base_version
+      return s
+    end
+  end
+
   class LsCoCommand < Command
 
     def synopsis
@@ -171,83 +197,6 @@ EOF
 
   end
 
-  class UpdateCommand < Command
-
-    def synopsis
-      "[-nomerge] [<element> ...]"
-    end
-
-    def help
-      <<EOF
-Update your (snapshot) view.
-
--nomerge    Don\'t attempt to merge in changes to checked-out files.
-EOF
-
-    end
-
-    def option_nomerge
-      @nomerge = true
-    end
-
-    def relative_path(s)
-      full_path = view_root + mkpath(s)
-      full_path.relative_path_from(Pathname.pwd)
-    end
-
-    def execute_update
-      args = '-log nul -force'
-      args += ' -print' if just_testing?
-      cleartool("update #{args} #{effective_targets}") do |line|
-        case line
-        when /^Processing dir "(.*)"/
-          # ignore
-        when /^\.*$/
-          # ignore
-        when /^Making dir "(.*)"/
-          report(:NEW, relative_path($1))
-        when /^Loading "(.*)"/
-          report(:UPDATED, relative_path($1))
-        when /^Unloaded "(.*)"/
-          report(:REMOVED, relative_path($1))
-        when /^Keeping hijacked object "(.*)" - base "(.*)"/
-          report(:HIJACK, relative_path($1), $2)
-        when /^Keeping "(.*)"/
-          # ignore
-        when /^End dir/
-          # ignore
-        when /^Done loading/
-          # ignore
-        else
-          cannot_deal_with line
-        end
-      end
-    end
-
-    def execute_merge
-      args = '-log nul -flatest '
-      if just_testing?
-        args += "-print"
-      elsif @graphical
-        args += "-gmerge"
-      else
-        args += "-merge -gmerge"
-      end
-      cleartool("findmerge #{effective_targets} #{args}") do |line|
-        case line
-        when /^Needs Merge "(.+)" \[to \S+ from (\S+) base (\S+)\]/
-          report(:MERGE, mkpath($1), $2)
-        end
-      end
-    end
-
-    def execute
-      execute_update
-      execute_merge unless @nomerge
-    end
-
-  end
-
   class CheckinCommand < Command
 
     def synopsis
@@ -264,7 +213,11 @@ EOF
       comment_file.open("w") do |out|
         out.puts(@comment)
       end
-      cleartool_unsafe("checkin -cfile #{comment_file} #{specified_targets}") do |line|
+      
+      # if checking in an add/remove, need to also check in the parent directory of that file
+      # therefore, also check in all affected parent directories
+      
+      cleartool_unsafe("checkin -cfile #{comment_file} #{specified_targets} #{specified_targets.parents}") do |line|
         case line
         when /^Loading /
           # ignore
