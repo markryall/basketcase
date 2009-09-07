@@ -23,7 +23,7 @@ EOF
 
     def relative_path(s)
       full_path = view_root + mkpath(s)
-      full_path.relative_path_from(Pathname.pwd)
+      full_path.relative_path_from(mkpath(Pathname.pwd))
     end
 
     def execute_update

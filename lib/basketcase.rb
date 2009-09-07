@@ -214,9 +214,7 @@ EOF
         out.puts(@comment)
       end
       
-      # if checking in an add/remove, need to also check in the parent directory of that file
-      # therefore, also check in all affected parent directories
-      
+      # if checking in an add/remove, one needs to also check in the parent directory of that file
       cleartool_unsafe("checkin -cfile #{comment_file} #{specified_targets} #{specified_targets.parents}") do |line|
         case line
         when /^Loading /
