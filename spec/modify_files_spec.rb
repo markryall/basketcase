@@ -10,46 +10,52 @@ describe  'modify files' do
     FileUtils.mkdir_p(CONTROL_VIEW)
   end
   
-  # add a file
-  # commit it
-  # update the control view
-  # verify it's there
-  it 'should add a file to clearcase' do 
+  def create_file_in_clearcase
+    
     newfile = "newfile-" + Time.now.to_i.to_s + ".txt"
-  
     Dir.chdir(WORKING_VIEW) do
-      create_file(newfile, "spanky new content")
+      File.open(newfile, 'w') { |out| out.puts "spanky new content" }
       Basketcase.new.do('add', newfile)
       Basketcase.new.do('ci', '-m', 'adding test file', newfile)
     end
     
+    newfile  
+  end
+  
+  
+  it 'should add a file to clearcase' do 
     
+    newfile = create_file_in_clearcase
+  
     Dir.chdir(CONTROL_VIEW) do
       Basketcase.new.do('update', '.')    
       File.exists?(newfile).should == true
     end  
     
-    @@created_file = newfile
+    
   end
   
   it 'should update a file in clearcase' do
+    
+    testfilename = create_file_in_clearcase
     
     new_content = 'i will love you as long as this file exists'
     
     Dir.chdir(WORKING_VIEW) do
       
-      file = Pathname(@@created_file)
+      file = Pathname(testfilename)
       file.chmod(file.stat.mode | 0600) unless file.writable?
+      File.open(testfilename, 'a') { |io| io.puts new_content}
       
-      File.open(@@created_file, 'a') { |io| io.puts new_content}
-      Basketcase.new.do('co', '-h', @@created_file)
-      Basketcase.new.do('ci', '-m', 'updating test file', @@created_file)
+      Basketcase.new.do('co', '-h', testfilename)
+      Basketcase.new.do('ci', '-m', 'updating test file', testfilename)
     end
     
     Dir.chdir(CONTROL_VIEW) do
+      
       Basketcase.new.do('update', '.')
       
-      file_contents = File.read(@@created_file)
+      file_contents = File.read(testfilename)
       file_contents.include?(new_content)
       
     end  
@@ -58,28 +64,22 @@ describe  'modify files' do
   
   it 'should delete a file from clearcase' do
     
+    testfilename = create_file_in_clearcase
+    
     Dir.chdir(WORKING_VIEW) do
-       File.exists?(@@created_file).should == true
        
-       Basketcase.new.do('remove', @@created_file)
-       Basketcase.new.do('ci', '-m', 'removing test file', @@created_file)
+       Basketcase.new.do('remove', testfilename)
+       Basketcase.new.do('ci', '-m', 'removing test file', testfilename)
        
      end
      
     Dir.chdir(CONTROL_VIEW) do
       Basketcase.new.do('update', '.')    
-      File.exists?(@@created_file).should == false
+      File.exists?(testfilename).should == false
     end  
     
   end
   
 
-  
-  
-  def create_file(filename, content)
-    
-    File.open(filename, 'w') { |out| out.puts content }
-      
-  end
   
 end

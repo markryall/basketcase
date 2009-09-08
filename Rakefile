@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'spec/rake/spectask'
 
 =begin
 require 'hoe'
@@ -17,10 +18,16 @@ begin
     gemspec.description = "basketcase fork"
     gemspec.email = "mdub@dogbiscuit.org"
     gemspec.homepage = "http://github.com/markryall/basketcase"
-    gemspec.description = "TODO"
     gemspec.authors = ["mdub", 'mark ryall', 'duana stanley']
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
+
+desc "Run all examples"
+Spec::Rake::SpecTask.new('spec') do |t|
+
+  #t.spec_files = FileList['spec//.rb']
+
 end
 
